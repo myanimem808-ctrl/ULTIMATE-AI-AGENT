@@ -1,0 +1,6 @@
+# Merge this snippet into ~/.hermes/config.yaml; update absolute paths for your PC.
+mcp_servers:
+  ultimate-local-tools:
+    command: "C:/Tools/Ultimate-Hermes-Agent/.venv/Scripts/python.exe"
+    args:
+      - "C:/Tools/Ultimate-Hermes-Agent/mcp_server.py"

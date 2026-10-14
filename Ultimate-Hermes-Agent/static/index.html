@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Ultimate Hermes Agent</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">H</div>
+        <div><div class="brand-title">ULTIMATE HERMES</div><div class="brand-subtitle">Local agent hub</div></div>
+      </div>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-page="chat"><span class="nav-icon">◈</span> Assistant <kbd>Ctrl K</kbd></button>
+        <button class="nav-item" data-page="youtube"><span class="nav-icon">▷</span> YouTube Downloader</button>
+        <button class="nav-item" data-page="files"><span class="nav-icon">▤</span> File Memory</button>
+        <button class="nav-item" data-page="windows"><span class="nav-icon">▦</span> Windows Tools</button>
+        <button class="nav-item" data-page="skills"><span class="nav-icon">✣</span> Skills Library</button>
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span> Settings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="status-row"><span id="status-dot" class="status-dot"></span><span id="status-text">Checking services…</span></div>
+        <button class="stop-button" id="stop-button">■ Emergency Stop <kbd>Ctrl ⇧ Q</kbd></button>
+        <button class="reset-button hidden" id="reset-stop-button">Reset emergency stop</button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div><div class="eyebrow">PERSONAL AUTOMATION WORKSPACE</div><h1 id="page-title">Assistant</h1></div>
+        <div class="topbar-right">
+          <select id="topbar-model-select" class="topbar-model-select" title="Switch active Gemini model" aria-label="Switch Gemini model"></select>
+          <span class="model-chip" id="model-chip">Gemini • not configured</span>
+          <span class="local-chip"><span class="local-dot"></span> Local dashboard</span>
+        </div>
+      </header>
+
+      <section id="page-chat" class="page active">
+        <div class="chat-intro"><div class="orb">✧</div><div><h2>Your tools, one agent.</h2><p>Ask a question, analyze your indexed files, or request a YouTube task. Windows UI actions always wait for your approval.</p></div></div>
+        <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+        <div class="composer-wrap">
+          <textarea id="chat-input" rows="3" placeholder="What should we work on?  (Ctrl + Enter to send)" aria-label="Message"></textarea>
+          <div class="composer-footer"><div class="composer-hints"><span>Enter a task or question</span><span>·</span><span>Ctrl + Enter sends</span></div><button id="send-button" class="primary-button">Send <span>↗</span></button></div>
+        </div>
+        <div id="chat-error" class="inline-error hidden"></div>
+      </section>
+
+      <section id="page-youtube" class="page">
+        <div class="section-heading"><div><div class="eyebrow">MEDIA PIPELINE</div><h2>Download workspace</h2><p>Analyze public YouTube video formats, then run an asynchronous download job.</p></div><div class="large-icon">▷</div></div>
+        <div class="panel">
+          <label for="youtube-url">YouTube URL</label>
+          <div class="input-row"><input id="youtube-url" placeholder="https://www.youtube.com/watch?v=…" /><button class="secondary-button" id="analyze-youtube">Analyze</button></div>
+          <div class="settings-grid three-col">
+            <div><label for="youtube-quality">Maximum resolution</label><select id="youtube-quality"><option value="best">Best available</option><option>2160</option><option>1440</option><option selected>1080</option><option>720</option><option>480</option><option>360</option></select></div>
+            <div><label for="youtube-format">Output format</label><select id="youtube-format"><option value="mp4">MP4 video</option><option value="mkv">MKV video</option><option value="mp3">MP3 audio</option><option value="m4a">M4A audio</option></select></div>
+            <div><label for="youtube-engine">Download Engine & Failover</label><select id="youtube-engine"><option value="auto" selected>Auto: Engine 1 + Fallback to Engine 2</option><option value="v1">Engine 1 (DASH Merger)</option><option value="v2">Engine 2 (Resilient Direct Stream)</option></select></div>
+          </div>
+          <div class="notice">Use downloads only where you have the rights and permission. MP3/M4A conversion and stream merging may require FFmpeg in PATH.</div>
+          <div id="video-info" class="video-info hidden"></div>
+          <div class="actions-row"><button id="start-download" class="primary-button" disabled>Start download</button><span id="youtube-status" class="muted">Analyze a URL to begin.</span></div>
+          <div id="download-progress-wrap" class="progress-wrap hidden"><div class="progress-label"><span id="download-progress-text">Queued…</span><span id="download-progress-percent">0%</span></div><div class="progress-track"><div id="download-progress-bar" class="progress-bar"></div></div></div>
+        </div>
+        <div class="panel panel-gap"><div class="panel-title-row"><h3>Recent downloads</h3><button class="text-button" id="refresh-downloads">Refresh</button></div><div id="download-list" class="file-list muted">No downloads yet.</div></div>
+      </section>
+
+      <section id="page-files" class="page">
+        <div class="section-heading"><div><div class="eyebrow">PERSISTENT FILE MEMORY</div><h2>Index once. Search later.</h2><p>Index user-selected source folders and supported documents into a local SQLite full-text index.</p></div><div class="large-icon">▤</div></div>
+        <div class="panel">
+          <label for="folder-path">Folder path to index</label><div class="input-row"><input id="folder-path" placeholder="C:\\Users\\you\\Documents\\project"/><button id="index-folder" class="primary-button">Index folder</button></div>
+          <div class="mini-stats"><div><strong id="indexed-count">0</strong><span>Indexed files</span></div><div><strong id="chunk-count">0</strong><span>Search chunks</span></div></div>
+          <div id="index-status" class="muted status-message">Nothing indexed yet. Index the folder containing the files you want the assistant to remember.</div>
+        </div>
+        <div class="panel panel-gap">
+          <label for="file-query">Search your indexed files</label><div class="input-row"><input id="file-query" placeholder="e.g. API key fallback, database schema, keyboard shortcuts"/><button id="search-files" class="secondary-button">Search</button></div>
+          <div id="file-results" class="search-results muted">Search results appear here.</div>
+        </div>
+        <div class="panel panel-gap"><div class="panel-title-row"><h3>Inspect a ZIP without extracting it</h3><span class="muted">Read-only, bounded inventory</span></div><label for="archive-path">ZIP file path</label><div class="input-row"><input id="archive-path" placeholder="C:\\path\\to\\repository.zip"/><button id="analyze-archive" class="secondary-button">Analyze archive</button></div><pre id="archive-result" class="code-result hidden"></pre></div>
+      </section>
+
+      <section id="page-windows" class="page">
+        <div class="section-heading"><div><div class="eyebrow">MODEL CONTEXT PROTOCOL</div><h2>Windows tools</h2><p>Connect the supplied Windows MCP server or any compatible local MCP server. All remote tool calls require a manual approval.</p></div><div class="large-icon">▦</div></div>
+        <div class="panel"><div class="panel-title-row"><div><h3>Connection status</h3><p id="mcp-summary" class="muted">No Windows MCP server connected.</p></div><button id="refresh-mcp" class="secondary-button">Refresh tools</button></div><div id="mcp-error" class="inline-error hidden"></div><div id="mcp-tools" class="tool-grid"></div></div>
+        <div class="panel panel-gap"><div class="panel-title-row"><h3>Pending approvals</h3><span class="muted">No action runs until approved</span></div><div id="approval-list" class="approval-list"><span class="muted">No pending actions.</span></div></div>
+        <div class="notice notice-plain">MCP commands run with your Windows account permissions. Only enable servers you trust. Avoid approving typing, file-save, process, mouse, or keyboard actions unless the displayed arguments are expected.</div>
+      </section>
+
+      <section id="page-skills" class="page">
+        <div class="section-heading"><div><div class="eyebrow">REUSABLE WORKFLOWS</div><h2>Skills library</h2><p>Local skills complement Hermes' existing tools, skills, memory, and scheduler.</p></div><div class="large-icon">✣</div></div>
+        <div id="skills-list" class="skill-grid"></div>
+        <div class="panel panel-gap"><h3>Hermes-native features retained</h3><p class="muted">Use the Hermes CLI/gateway for its native chat TUI, slash commands, provider switching, subagents, persistent memory/learning, scheduled jobs, messaging bridges, and terminal backends. This dashboard adds YouTube, persistent file-index search, and approval-gated Windows MCP tools through an MCP-compatible tool server.</p><div class="actions-row"><a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noreferrer" class="text-link">Hermes documentation ↗</a><a href="https://py.sdk.modelcontextprotocol.io/" target="_blank" rel="noreferrer" class="text-link">MCP SDK documentation ↗</a></div></div>
+      </section>
+
+      <section id="page-settings" class="page">
+        <div class="section-heading"><div><div class="eyebrow">LOCAL CONFIGURATION</div><h2>Settings & providers</h2><p>Configure multiple Gemini keys, choose a model, and register MCP servers.</p></div><div class="large-icon">⚙</div></div>
+        <div class="panel">
+          <div class="panel-title-row"><h3>Gemini provider</h3><span class="status-pill" id="key-count-pill">0 keys</span></div>
+          <label for="settings-model-select">Select Gemini Model</label>
+          <div class="model-select-row">
+            <select id="settings-model-select" class="settings-select" aria-label="Select Gemini model"></select>
+            <input id="gemini-model" placeholder="Custom Model ID (e.g. gemini-3.5-flash)" autocomplete="off" />
+          </div>
+          <div class="keys-header-row">
+            <label for="gemini-keys" style="margin:0;">Gemini API keys <span class="muted">(one per line or comma-separated)</span></label>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button type="button" id="toggle-keys-visibility" class="text-button">👁 Mask keys</button>
+              <button type="button" id="clear-keys-button" class="text-button warn-button hidden">Clear saved keys</button>
+            </div>
+          </div>
+          <textarea id="gemini-keys" rows="5" placeholder="Paste your Gemini API key(s) here. Click 'Save settings' below to save."></textarea>
+          <div id="keys-status-indicator" class="keys-status-indicator"></div>
+          <div class="notice">Fallback rotates across configured keys on authentication, quota/rate-limit, and transient service errors. Keys belonging to the same Google Cloud project may share quota. Environment variables <code>GEMINI_API_KEYS</code> and <code>GEMINI_API_KEY</code> remain active too.</div>
+        </div>
+        <div class="panel panel-gap">
+          <div class="panel-title-row"><h3>MCP servers</h3><span class="muted">Optional</span></div>
+          <label for="mcp-config">Server configuration (JSON array)</label><textarea id="mcp-config" rows="9" spellcheck="false"></textarea>
+          <div class="code-hint">Stdio example: <code>{"name":"windows","transport":"stdio","command":"dotnet","args":["run","--project","C:\\path\\to\\Sbroenne.WindowsMcp.csproj"],"enabled":false}</code>. Build/install the Windows MCP server first, and keep enabled=false until the path is correct.</div>
+        </div>
+        <div class="panel panel-gap"><div class="actions-row"><button id="save-settings" class="primary-button">Save settings</button><span id="settings-status" class="muted"></span></div><div class="small-print" id="settings-file"></div></div>
+        <div class="panel panel-gap"><h3>Keyboard shortcuts</h3><div class="shortcut-list"><div><kbd>Ctrl + K</kbd><span>Focus the assistant input from any page</span></div><div><kbd>Ctrl + Enter</kbd><span>Send the assistant message</span></div><div><kbd>Ctrl + Shift + Q</kbd><span>Activate emergency stop while this dashboard is focused</span></div><div><kbd>Escape</kbd><span>Clear the active text input</span></div></div><p class="small-print">Dashboard shortcuts require the browser tab to be focused; use Hermes' own TUI shortcuts for the CLI session.</p></div>
+      </section>
+
+      <footer class="footer"><span>Ultimate Hermes Agent · v1.0.0</span><span>Loopback-only by default · No shell-execution tool exposed to the model</span></footer>
+    </main>
+  </div>
+  <div id="toast" role="status" aria-live="polite" class="toast hidden"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
